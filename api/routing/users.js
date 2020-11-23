@@ -27,7 +27,7 @@ router.post("/signup",(req,res,next) =>{
                     user.save().then(result =>{
                         console.log(result);
                         res.status(201).json({
-                            message: "User created"
+                            message: "created User"
                         });
                     }).catch(err =>{
                         console.log(err);
@@ -45,25 +45,25 @@ router.post("/login",(req,res,next)=>{
   User.find({email: req.body.email}).exec().then(user =>{
     if(user.length < 1){
       return res.status(401).json({
-        message: "authorization unsuccessful"
+        message: " unsuccessful"
       });
     }
     bcrypt.compare(req.body.password,user[0].password,(err,result)=>{
       if(err){
         return res.status(401).json({
-          message: "authorization unsuccessful"
+          message: "unsuccessful"
         });
       }
       if(result){
         const token = jwt.sign({
           email: user[0].email,
           userId: user[0]._id
-        },process.env.AUTH_TOKEN,{
-          expiresIn : "1h"
+        },process.env.AUTHORIZED_Chip,{
+          expiresIn : "2h"
         });
       }
         return res.status(200).json({
-          message: "authorization successful",
+          message: "successful",
           token : req.userData
         });
       })

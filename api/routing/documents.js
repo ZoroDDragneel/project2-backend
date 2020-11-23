@@ -1,18 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
-const Document = require("../model/document");
+const File = require("../model/document");
 const User = require("../model/user");
-const authcheck = require("../middleware/authCheck");
 
 const multer = require("multer");
 
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, 'uploads')
+    destination: function (req, rec, cb) {
+      cb(null, 'uploads/')
     },
-    filename: function (req, file, cb) {
-      cb(null, file.fieldname + '-' + Date.now())
+    filename: function (req, rec, cb) {
+      cb(null, rec.fieldname + '-' + Date.now())
     }
   })
 
@@ -20,22 +19,22 @@ const upload = multer({
     storage: storage,
 });
 
-router.post("/",upload.single("doc"),(req,res,next)=>{
-    const file = req.file
-    if (!file) {
-      const err = new Error('Please upload a file')
+router.post("/",upload.single("files"),(req,res,next)=>{
+    const rec = req.rec
+    if (!rec) {
+      const err = new Error('Please upload the file')
       err.httpStatusCode = 400
       return next(error)
     }
-      res.send(file)
-      const document = new Document({
+      res.send(rec)
+      const file = new File({
         _id : new mongoose.Types.ObjectId,
         name: req.body.name,
-        user: req.body.user,
-        meta_data: req.body.meta_data
+        username: req.body.user,
+        metaData: req.body.metaData
         });
     
-        document.save().then(result =>{
+        file.save().then(result =>{
         console.log(result);
         res.status(201).json({
             message: "Handing POST requests to /documents",
@@ -49,12 +48,12 @@ router.post("/",upload.single("doc"),(req,res,next)=>{
         })  
 });
 
-router.get("/:documentId",(req,res,next)=>{
-    const document = req.params.documentId;
-    Document.find({user: document}).exec().then(doc =>{
-        console.log("From database",doc);
-        if(doc){
-            res.status(200).json(doc);
+router.get("/:fileId",(req,res,next)=>{
+    const file = req.params.fileId;
+    File.find({user: file}).exec().then(files =>{
+        console.log("From database",files);
+        if(files){
+            res.status(200).json(files);
         } else{
             res.status(404).json({
                 message: "no valid entry found for the user Id"
@@ -66,9 +65,9 @@ router.get("/:documentId",(req,res,next)=>{
     })
 })
 
-router.delete("/:documentId",(req,res,next)=>{
-    const id = req.params.documentId;
-    Document.deleteOne({_id: id}).exec().then(result =>{
+router.delete("/:fileId",(req,res,next)=>{
+    const id = req.params.fileId;
+    File.deleteOne({_id: id}).exec().then(result =>{
         res.status(200).json(result);
     }).catch(err =>{
         console.log(err);
