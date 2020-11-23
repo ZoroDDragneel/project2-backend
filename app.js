@@ -3,10 +3,13 @@ const app = express();
 const morgan = require("morgan");
 const bodyParse = require("body-parser");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 const documentRoutes = require("./api/routing/documents");
 const userRoutes = require("./api/routing/users");
 const { model } = require("./api/model/user");
+
+
 
 mongoose.connect('mongodb+srv://kopano:'
 + process.env.MONGO_ATLAS_PW  + 
@@ -16,9 +19,14 @@ mongoose.connect('mongodb+srv://kopano:'
     useCreateIndex: true
 })
 
+app.use(cors());
 app.use(morgan("dev"));
 app.use(bodyParse.urlencoded({extended:false}));
 app.use(bodyParse.json());
+
+app.post('https://fileuploaderz.azurewebsites.net/', (req,res, next) => {
+    console.log(req.body)
+})
 
 app.use((req,res,next) =>{
     res.header("Accesss-Control-Allow-Origin","*");
