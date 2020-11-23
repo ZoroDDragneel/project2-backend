@@ -24,9 +24,9 @@ app.use(morgan("dev"));
 app.use(bodyParse.urlencoded({extended:false}));
 app.use(bodyParse.json());
 
-app.post('https://fileuploaderz.azurewebsites.net/', (req,res, next) => {
+/*app.post('/signup', (req,res, next) => {
     console.log(req.body)
-})
+})*/
 
 app.use((req,res,next) =>{
     res.header("Accesss-Control-Allow-Origin","*");
